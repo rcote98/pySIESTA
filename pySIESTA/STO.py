@@ -24,11 +24,11 @@ class STOGeometry(SolidGeometry):
             self.ref_lat_vecs[i,i] = lattice*self.supercell[i]
 
         self.born_charges = {
-            0: np.array([ 2.566657,  2.566657,  2.566657]), 
-            1: np.array([ 7.265894,  7.265894,  7.265894]), 
-            4: np.array([-5.707345, -2.062603, -2.062603]),
-            3: np.array([-2.062603, -5.707345, -2.062603]),
-            2: np.array([-2.062603, -2.062603, -5.707345]) 
+            0: np.array([ 2.5256,  2.5256,  2.5256]), 
+            1: np.array([ 7.5526,  7.5526,  7.5526]), 
+            4: np.array([-5.9494, -2.0644, -2.0644]),
+            3: np.array([-2.0644, -5.9494, -2.0644]),
+            2: np.array([-2.0644, -2.0644, -5.9494]) 
         }
 
         sc = self.supercell
@@ -137,7 +137,7 @@ class STOGeometry(SolidGeometry):
         ]
 
         sc = self.supercell
-        uc_vol = np.prod(np.linalg.norm(self.lat_vecs, axis=0))/np.prod(self.supercell)
+        uc_vol = np.prod(np.linalg.norm(self.lat_vecs*ang2bohr, axis=0))/np.prod(self.supercell)
 
         pols = np.zeros((sc[0], sc[1], sc[2], 3))
         disps = self.get_displacements(unit="bohr", strain = False)
