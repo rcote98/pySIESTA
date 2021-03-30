@@ -370,3 +370,84 @@ def STO_FE(supercell, disp, axis="z"):
                     raise NotImplementedError()
 
     return geom
+
+
+def STO_AFD_FE(supercell, angle, ti_disp, mode="a", axis="z", clockwise=False):
+
+    """
+
+    """
+
+    _, B, Ox, Oy, Oz = 0, 1, 2, 3, 4
+    sc = np.array(supercell)
+    geom = STOGeometry(sc)
+    disp = 0.5*np.arctan(angle/180.*np.pi)/sc
+
+    if clockwise:
+        cw = 1
+    else:
+        cw = 0
+
+    for x in range(supercell[0]):
+        for y in range(supercell[1]):
+            for z in range(supercell[2]):
+
+                if mode == "a":
+
+                    factor = (-1)**x * (-1)**y * (-1)**z * (-1)**cw
+
+                    if axis == "x":
+                        geom.positions[x,y,z,Oy,2] -= factor*disp[2]
+                        geom.positions[x,y,z,Oz,1] += factor*disp[1]
+                        geom.positions[x,y,z,B,0]  += ti_disp
+                    elif axis == "y":
+                        geom.positions[x,y,z,Oz,0] -= factor*disp[0]
+                        geom.positions[x,y,z,Ox,2] += factor*disp[2]
+                        geom.positions[x,y,z,B,1]  += ti_disp
+                    elif axis == "z":
+                        geom.positions[x,y,z,Ox,1] -= factor*disp[1]
+                        geom.positions[x,y,z,Oy,0] += factor*disp[0]
+                        geom.positions[x,y,z,B,2]  += ti_disp
+                    elif axis == "xy" or axis == "yx":
+                        geom.positions[x,y,z,Oy,2] -= factor*disp[2]
+                        geom.positions[x,y,z,Oz,1] += factor*disp[1]
+                        geom.positions[x,y,z,Oz,0] -= factor*disp[0]
+                        geom.positions[x,y,z,Ox,2] += factor*disp[2]
+                        geom.positions[x,y,z,B,0]  += ti_disp
+                        geom.positions[x,y,z,B,1]  += ti_disp
+                    else:
+                        raise NotImplementedError()
+
+                elif mode == "i":
+
+                    if axis == "x":
+                        factor = (-1)**y * (-1)**z * (-1)**cw
+                        geom.positions[x,y,z,Oy,2] -= factor*disp[2]
+                        geom.positions[x,y,z,Oz,1] += factor*disp[1]
+                        geom.positions[x,y,z,B,0]  += ti_disp
+                    elif axis == "y":
+                        factor = (-1)**x * (-1)**z * (-1)**cw
+                        geom.positions[x,y,z,Oz,0] -= factor*disp[0]
+                        geom.positions[x,y,z,Ox,2] += factor*disp[2]
+                        geom.positions[x,y,z,B,1]  += ti_disp
+                    elif axis == "z":
+                        factor = (-1)**x * (-1)**y * (-1)**cw
+                        geom.positions[x,y,z,Ox,1] -= factor*disp[1]
+                        geom.positions[x,y,z,Oy,0] += factor*disp[0]
+                        geom.positions[x,y,z,B,2]  += ti_disp
+                    elif axis == "xy" or axis == "yx":
+                        factor = (-1)**y * (-1)**z * (-1)**cw
+                        geom.positions[x,y,z,Oy,2] -= factor*disp[2]
+                        geom.positions[x,y,z,Oz,1] += factor*disp[1]
+                        factor = (-1)**x * (-1)**z * (-1)**cw
+                        geom.positions[x,y,z,Oz,0] -= factor*disp[0]
+                        geom.positions[x,y,z,Ox,2] += factor*disp[2]
+                        geom.positions[x,y,z,B,0]  += ti_disp
+                        geom.positions[x,y,z,B,1]  += ti_disp
+                    else:
+                        raise NotImplementedError()
+    
+                else:
+                    raise NotImplementedError()
+
+    return geom
