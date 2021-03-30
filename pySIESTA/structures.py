@@ -225,7 +225,7 @@ class SolidGeometry():
             tsv = csv.writer(f, delimiter="\t")
 
             for i in range(3):
-                line = ["{:10.8F}".format(d) for d in self.lat_vecs[i,:]] + ["{:10.8F}".format(0)]*3
+                line = ["{:10.8F}".format(d) for d in self.lat_vecs[i,:]]
                 tsv.writerow(line)
 
             tsv.writerow([self.tot_ats])
