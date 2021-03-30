@@ -17,7 +17,7 @@ import re                           # regular expressions
 # package imports
 from pySIESTA.structures import SolidGeometry
 
-SIESTA_CORES = 6
+SIESTA_CORES = 20
 SIESTA_EXEC = os.getenv("SIESTA_EXEC", default = "None") 
 
 if not os.path.exists(SIESTA_EXEC):
