@@ -233,6 +233,8 @@ class STO_FDFSettings(FDFSettings):
                     ['1.00000000000000']
                     ], 
             'writecoorstep': ['.true.'], 
+            'AtomicCoordinatesFormat': ['fractional'],
+            'AtomCoorFormatOut': ['fractional'],
             'kgrid_monkhorst_pack': [
                     ['3', '0', '0', '0.5'], 
                     ['0', '3', '0', '0.5'], 
