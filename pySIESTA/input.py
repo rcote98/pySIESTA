@@ -1,7 +1,8 @@
 
 import os
 
-
+SIESTA_EXEC = os.getenv("SIESTA_EXEC", default = None) 
+SIESTA_CORES = 4
 
 class FDF():
 
@@ -128,9 +129,10 @@ class FDF():
         # create temporary input
         self.read_fdf("_pySIESTAinput.fdf")
 
-        #command = self.scup_exec + " < _pySIESTAinput.fdf > " + output_file
+        command = f"mpirun -n {SIESTA_CORES} {SIESTA_EXEC} < _pySIESTAinput.fdf > {output_file}"
 
         # execute simulation
+        print(command)
         #os.system(command)
 
         # remove temporary input
