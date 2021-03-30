@@ -50,7 +50,6 @@ class SolidGeometry():
         self.strain         = np.identity(3) 
         self.lat_vecs       = np.zeros((3,3))
         self.ref_lat_vecs   = np.zeros((3,3))
-        self.displacements  = np.zeros((sc[0], sc[1], sc[2], self.nats, 3))
         self.positions      = np.zeros((sc[0], sc[1], sc[2], self.nats, 3))
         self.reference      = np.zeros((sc[0], sc[1], sc[2], self.nats, 3))
         self.born_charges   = {}
@@ -82,6 +81,15 @@ class SolidGeometry():
                             self.reference[x,y,z,at,:] = np.array([float(x) for x in line[2:]])
 
         self.loaded_ref = True
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+    def set_strain(self, strain_mat):
+
+        self.strain = strain_mat
+        self.lat_vecs = np.dot(self.strain, self.ref_lat_vecs)
+        
+        pass
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -220,7 +228,7 @@ class SolidGeometry():
                 line = ["{:10.8F}".format(d) for d in self.lat_vecs[i,:]] + ["{:10.8F}".format(0)]*3
                 tsv.writerow(line)
 
-            tsv.writerow([self.nats])
+            tsv.writerow([self.tot_ats])
             
             for x in range(self.supercell[0]):
                 for y in range(self.supercell[1]):

@@ -35,7 +35,6 @@ def parse_energy(fname):
                 line = remove_prefix(line, "siesta:")
                 line = line.split("=")
                 line = [w.replace(" ", "") for w in line]
-                print(line)
                 line[1] = float(line[1])
                 energy[line[0]] = float(line[1])
 

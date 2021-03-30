@@ -1,8 +1,9 @@
 
 import numpy as np
 
-from pySIESTA.structures import SolidGeometry
 from pySIESTA.constants import ang2bohr, e2C, bohr2m
+from pySIESTA.structures import SolidGeometry
+from pySIESTA.scheduler import FDFSettings
 
 class STOGeometry(SolidGeometry):
 
@@ -11,9 +12,9 @@ class STOGeometry(SolidGeometry):
         species = {
             0: [1, 38, "Sr"], 
             1: [2, 22, "Ti"], 
-            4: [3, 8,  "Ox"],
+            2: [3, 8,  "Ox"],
             3: [3, 8,  "Oy"],
-            2: [3, 8,  "Oz"],  
+            4: [3, 8,  "Oz"],  
         }
 
         super().__init__(supercell, species)
@@ -26,9 +27,9 @@ class STOGeometry(SolidGeometry):
         self.born_charges = {
             0: np.array([ 2.5256,  2.5256,  2.5256]), 
             1: np.array([ 7.5526,  7.5526,  7.5526]), 
-            4: np.array([-5.9494, -2.0644, -2.0644]),
+            2: np.array([-5.9494, -2.0644, -2.0644]),
             3: np.array([-2.0644, -5.9494, -2.0644]),
-            2: np.array([-2.0644, -2.0644, -5.9494]) 
+            4: np.array([-2.0644, -2.0644, -5.9494]) 
         }
 
         sc = self.supercell
@@ -36,9 +37,9 @@ class STOGeometry(SolidGeometry):
         uc_pos = {
             0: np.array([0.00, 0.00, 0.00]),
             1: np.array([0.50, 0.50, 0.50]),
-            4: np.array([0.00, 0.50, 0.50]),
+            2: np.array([0.00, 0.50, 0.50]),
             3: np.array([0.50, 0.00, 0.50]),
-            2: np.array([0.50, 0.50, 0.00])
+            4: np.array([0.50, 0.50, 0.00])
         }
 
         for x in range(self.supercell[0]):
@@ -55,7 +56,7 @@ class STOGeometry(SolidGeometry):
     def rotations(self, angles = True):
 
         sc = self.supercell
-        Ox, Oy, Oz = 4, 3, 2
+        Ox, Oy, Oz = 2, 3, 4
 
         ROT_X=[
             # atom, hopping, weight, target vector
@@ -114,7 +115,7 @@ class STOGeometry(SolidGeometry):
 
     def polarization(self):
 
-        A, B, Ox, Oy, Oz = 0, 1, 4, 3, 2
+        A, B, Ox, Oy, Oz = 0, 1, 2, 3, 4
 
         FE_mode=[  # atom, hopping, weight
             # "frame"
@@ -163,3 +164,209 @@ class STOGeometry(SolidGeometry):
         pols = pols*e2C/bohr2m**2   # in C/m2
 
         return pols
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+class STO_FDFSettings(FDFSettings):
+
+    
+    def __init__(self):
+
+        # same as the normal fdf class but with preloaded stuff
+
+        self.settings = {
+            'systemname': ['Strontium titanate (SrTiO3)'], 
+            'systemlabel': ['srtio3-str'], 
+            'numberofspecies': [3], 
+            'numberofatoms': [40], 
+            'chemicalspecieslabel': [
+                    [1, 38, 'Sr'], 
+                    [2, 22, 'Ti'], 
+                    [3, 8, 'O']
+            ], 
+            'ps.lmax': [
+                    ['Sr', 3], 
+                    ['Ti', 3], 
+                    ['O',  3]], 
+            'pao.basis': [
+                    ['sr', '5', '1.64000'], 
+                    ['n=4', '0', '1', 'e', '155.00000', '6.00000'], 
+                    ['6.49993'], 
+                    ['1.00000'], 
+                    ['n=5', '0', '2', 'e', '149.48000', '6.50000'], 
+                    ['6.99958', '5.49957'], 
+                    ['1.00000', '1.00000'], 
+                    ['n=4', '1', '1', 'e', '148.98000', '5.61000'], 
+                    ['6.74964'], 
+                    ['1.00000'], 
+                    ['n=5', '1', '1', 'e', '4.57000', '1.20000'], 
+                    ['4.00000'], 
+                    ['1.00000'], 
+                    ['n=4', '2', '1', 'e', '146.26000', '6.09000'], 
+                    ['6.63062'], 
+                    ['1.00000'], 
+                    ['ti', '5', '1.91'], 
+                    ['n=3', '0', '1', 'e', '93.95', '5.20'], 
+                    ['5.69946662616249'], 
+                    ['1.00000000000000'], 
+                    ['n=3', '1', '1', 'e', '95.47', '5.20'], 
+                    ['5.69941339465994'], 
+                    ['1.00000000000000'], 
+                    ['n=4', '0', '2', 'e', '96.47', '5.60'], 
+                    ['6.09996398975307', '5.09944363262274'], 
+                    ['1.00000000000000', '1.00000000000000'], 
+                    ['n=3', '2', '2', 'e', '46.05', '4.95'], 
+                    ['5.94327035784617', '4.70009988294302'], 
+                    ['1.00000000000000', '1.00000000000000'], 
+                    ['n=4', '1', '1', 'e', '0.50', '1.77'], 
+                    ['3.05365979938936'], 
+                    ['1.00000000000000'], 
+                    ['o', '3', '-0.28'], 
+                    ['n=2', '0', '2', 'e', '40.58', '3.95'], 
+                    ['4.95272270428712', '3.60331408800389'], 
+                    ['1.00000000000000', '1.00000000000000'], 
+                    ['n=2', '1', '2', 'e', '36.78', '4.35'], 
+                    ['4.99990228025066', '3.89745395068600'], 
+                    ['1.00000000000000', '1.00000000000000'], 
+                    ['n=3', '2', '1', 'e', '21.69', '0.93'], 
+                    ['2.73276990670788'], 
+                    ['1.00000000000000']
+                    ], 
+            'writecoorstep': ['.true.'], 
+            'kgrid_monkhorst_pack': [
+                    ['3', '0', '0', '0.5'], 
+                    ['0', '3', '0', '0.5'], 
+                    ['0', '0', '3', '0.5']
+                    ], 
+            'xc.functional': ['lda'], 
+            'xc.authors': ['ca'], 
+            'meshcutoff': [600, 'ry'], 
+            'dm.numberpulay': [3], 
+            'dm.usesavedm': ['.true.'], 
+            'dm.tolerance': ['1.d-4'], 
+            'maxscfiterations': ['100'], 
+            'electronictemperature': ['0.025', 'ev'], 
+            'scf.mixafterconvergence': ['.false.'], 
+            'md.typeofrun': ['cg'], 
+            'md.variablecell': ['.true.'], 
+            'md.usestructfile': ['.true.'], 
+            'md.usesavexv': ['.false.'], 
+            'md.usesavecg': ['.false.'], 
+            'md.numcgsteps': [40], 
+            'md.maxcgdispl': [0.3, 'bohr'], 
+            'md.maxforcetol': [0.01, 'ev/ang'], 
+            'md.maxstresstol': [0.0001, 'ev/ang**3'], 
+            'geometryconstraints': [
+                ['routine', 'constr']
+                ], 
+            'projecteddensityofstates': [
+                ['-70.00', '5.00', '0.050', '3000', 'ev']
+                ], 
+            'pdos.kgrid_monkhorst_pack': [
+                    ['30', '0', '0', '0.5'], 
+                    ['0', '30', '0', '0.5'], 
+                    ['0', '0', '30', '0.5']
+                    ]
+        }
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+def STO_AFD(supercell, angle, mode="a", axis="z", clockwise=False):
+
+    """
+
+    """
+
+    _, _, Ox, Oy, Oz = 0, 1, 2, 3, 4
+    sc = np.array(supercell)
+    geom = STOGeometry(sc)
+    disp = 0.5*np.arctan(angle/180.*np.pi)/sc
+
+    if clockwise:
+        cw = 1
+    else:
+        cw = 0
+
+    for x in range(supercell[0]):
+        for y in range(supercell[1]):
+            for z in range(supercell[2]):
+
+                if mode == "a":
+
+                    factor = (-1)**x * (-1)**y * (-1)**z * (-1)**cw
+
+                    if axis == "x":
+                        geom.positions[x,y,z,Oy,2] -= factor*disp[2]
+                        geom.positions[x,y,z,Oz,1] += factor*disp[1]
+                    elif axis == "y":
+                        geom.positions[x,y,z,Oz,0] -= factor*disp[0]
+                        geom.positions[x,y,z,Ox,2] += factor*disp[2]
+                    elif axis == "z":
+                        geom.positions[x,y,z,Ox,1] -= factor*disp[1]
+                        geom.positions[x,y,z,Oy,0] += factor*disp[0]
+                    elif axis == "xy" or axis == "yx":
+                        geom.positions[x,y,z,Oy,2] -= factor*disp[2]
+                        geom.positions[x,y,z,Oz,1] += factor*disp[1]
+                        geom.positions[x,y,z,Oz,0] -= factor*disp[0]
+                        geom.positions[x,y,z,Ox,2] += factor*disp[2]
+                    else:
+                        raise NotImplementedError()
+
+                elif mode == "i":
+
+                    if axis == "x":
+                        factor = (-1)**y * (-1)**z * (-1)**cw
+                        geom.positions[x,y,z,Oy,2] -= factor*disp[2]
+                        geom.positions[x,y,z,Oz,1] += factor*disp[1]
+                    elif axis == "y":
+                        factor = (-1)**x * (-1)**z * (-1)**cw
+                        geom.positions[x,y,z,Oz,0] -= factor*disp[0]
+                        geom.positions[x,y,z,Ox,2] += factor*disp[2]
+                    elif axis == "z":
+                        factor = (-1)**x * (-1)**y * (-1)**cw
+                        geom.positions[x,y,z,Ox,1] -= factor*disp[1]
+                        geom.positions[x,y,z,Oy,0] += factor*disp[0]
+                    elif axis == "xy" or axis == "yx":
+                        factor = (-1)**y * (-1)**z * (-1)**cw
+                        geom.positions[x,y,z,Oy,2] -= factor*disp[2]
+                        geom.positions[x,y,z,Oz,1] += factor*disp[1]
+                        factor = (-1)**x * (-1)**z * (-1)**cw
+                        geom.positions[x,y,z,Oz,0] -= factor*disp[0]
+                        geom.positions[x,y,z,Ox,2] += factor*disp[2]
+                    else:
+                        raise NotImplementedError()
+    
+                else:
+                    raise NotImplementedError()
+
+    return geom
+
+
+def STO_FE(supercell, disp, axis="z"):
+
+    """
+
+    """
+
+    _, B, _, _, _ = 0, 1, 2, 3, 4
+    sc = np.array(supercell)
+    geom = STOGeometry(sc)
+
+
+    for x in range(supercell[0]):
+        for y in range(supercell[1]):
+            for z in range(supercell[2]):
+
+                if axis == "x":
+                    geom.positions[x,y,z,B,0] += disp
+                elif axis == "y":
+                    geom.positions[x,y,z,B,1] += disp
+                elif axis == "z":
+                    geom.positions[x,y,z,B,2] += disp
+                elif axis == "xy" or axis == "yx":
+                    geom.positions[x,y,z,B,0] += disp
+                    geom.positions[x,y,z,B,1] += disp
+                else:
+                    raise NotImplementedError()
+
+    return geom
