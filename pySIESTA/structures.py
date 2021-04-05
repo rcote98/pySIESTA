@@ -2,10 +2,17 @@
     Provides data structures to handle SIESTA files.
 """
 
-
-import csv
+import importlib
+import csv, copy
 
 # third party imports
+SPG_SPEC = importlib.util.find_spec("spglib")
+if SPG_SPEC is not None:
+    import spglib as spg
+    SPG_SPEC = True
+else:
+    SPG_SPEC = False
+
 import numpy as np
 
 from pySIESTA.constants import ang2bohr
@@ -55,6 +62,19 @@ class SolidGeometry():
         self.born_charges   = {}
         for at in self.species.keys():
             self.born_charges[at] = np.array([0.0, 0.0, 0.0])
+
+    def copy(self):
+
+        ngeo = SolidGeometry(self.supercell, self.species)
+        ngeo.loaded_struct  = self.loaded_struct
+        ngeo.loaded_ref     = self.loaded_ref
+        ngeo.strain         = self.strain.copy()
+        ngeo.lat_vecs       = self.lat_vecs.copy()
+        ngeo.ref_lat_vecs   = self.ref_lat_vecs.copy()
+        ngeo.positions      = self.positions.copy()
+        ngeo.reference      = self.reference.copy()
+        ngeo.born_charges   = copy.deepcopy(self.born_charges)
+        return ngeo
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -159,15 +179,58 @@ class SolidGeometry():
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
-    def polarization(self):
+    def space_group(self, prec=1e-5):
 
-        if not self.loaded_ref:
-            print("WARNING: No reference structure loaded.")
+        if not SPG_SPEC:
+            print("WARNING: spglib module needed for symmetry operations.")
+            exit
 
         sc = self.supercell
-        pols = np.zeros((sc[0], sc[1], sc[2], 3))
 
-        return pols
+        pos_list = []
+        spe_list = []
+        for x in range(sc[0]):
+            for y in range(sc[1]):
+                for z in range(sc[2]):
+                    for at in range(self.nats):
+                        pos_list.append(list(self.positions[x,y,z,at,:]))
+                        spe_list.append(self.species[at][0])
+
+        cell = (self.lat_vecs, pos_list, spe_list)
+
+        return spg.get_spacegroup(cell, symprec=prec)
+
+
+    # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+    def beautify_coordinates(self, prec=1e-5):
+
+        if not SPG_SPEC:
+            print("WARNING: spglib module needed for symmetry operations.")
+            exit
+
+        sc = self.supercell
+
+        pos_list = []
+        spe_list = []
+        for x in range(sc[0]):
+            for y in range(sc[1]):
+                for z in range(sc[2]):
+                    for at in range(self.nats):
+                        pos_list.append(list(self.positions[x,y,z,at,:]))
+                        spe_list.append(self.species[at][0])
+
+        cell = (self.lat_vecs, pos_list, spe_list)
+
+        lattice, scaled_positions, numbers = spg.refine_cell(cell, symprec=prec)
+        dataset = spg.get_symmetry_dataset(cell, symprec=prec, angle_tolerance=-1.0, hall_number=0)
+
+        geom = self.copy()
+
+
+        
+
+        return geom
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
@@ -243,7 +306,10 @@ class SolidGeometry():
 
     # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
+    def write_XYZ(self, xyz_file):
 
+        #TODO
+        pass
 
 
 
