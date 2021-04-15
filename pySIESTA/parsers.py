@@ -1,7 +1,9 @@
 
 import numpy as np
 import pandas as pd
+import re
 
+# auxiliary funcs
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 def remove_prefix(text, prefix):
@@ -9,12 +11,12 @@ def remove_prefix(text, prefix):
         return text[len(prefix):]
     return text 
 
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
-
-def generate_lines_that_contain(string, fp):
+def generate_lines_that_match(string, fp):
     for line in fp:
-        if string in line:
-            yield line.rstrip()
+        if re.search(string, line):
+            yield line
+
+
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 def parse_energy(fname):
@@ -25,7 +27,7 @@ def parse_energy(fname):
 
         en_parse = False
         counter = 12
-        for line in generate_lines_that_contain("siesta:", f):
+        for line in generate_lines_that_match("siesta:", f):
             
             if "Final energy (eV):" in line:
                 en_parse = True
@@ -41,5 +43,21 @@ def parse_energy(fname):
                 counter -= 1
 
     return energy
+
+
+def check_last_cg_step(fname):
+
+    lcg = None
+    with open(fname, "r") as f:
+        string = "Begin CG opt. move ="
+        for l in generate_lines_that_match(string, f):
+            lcg = l
+
+    if lcg is None:
+        return None
+    else:
+        print(lcg)
+        return 0 #float(last_energy.split()[3])
+
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
