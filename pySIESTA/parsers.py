@@ -46,7 +46,7 @@ def parse_energy(fname):
 
 
 def check_last_cg_step(fname):
-
+    
     lcg = None
     with open(fname, "r") as f:
         string = "Begin CG opt. move ="
@@ -56,8 +56,7 @@ def check_last_cg_step(fname):
     if lcg is None:
         return None
     else:
-        print(lcg)
-        return 0 #float(last_energy.split()[3])
+        return int(lcg.split()[5])
 
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
