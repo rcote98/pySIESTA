@@ -1,6 +1,4 @@
 
-import numpy as np
-import pandas as pd
 import re
 
 # auxiliary funcs
@@ -15,7 +13,6 @@ def generate_lines_that_match(string, fp):
     for line in fp:
         if re.search(string, line):
             yield line
-
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 

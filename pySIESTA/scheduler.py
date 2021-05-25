@@ -1,5 +1,5 @@
 """
-Classes to mass-execute SIESTA geometry optimizations.
+Classes execute SIESTA simulations
 """
 
 # third party imports
